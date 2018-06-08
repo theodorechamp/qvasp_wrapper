@@ -2,7 +2,7 @@ from SSHClient import SSHClient
 from Material import Material
 import Operations
 import constants as c
-import subprocess
+from bashcmd import bash
 
 
 def main():
@@ -14,4 +14,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    subprocess.Popen("rm -r ./Files/Ti/", shell=True)
+ #   bash("rm -r ./Files/Ti/")
