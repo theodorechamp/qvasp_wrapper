@@ -3,7 +3,8 @@ from subprocess import Popen
 
 
 def bash(cmd, echo=False):
+    # type: (string, Boolean) -> object
     Popen(cmd, shell=True)
     if echo:
         print(cmd)
-    sleep(0.001)
+    sleep(0.01)
