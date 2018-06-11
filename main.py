@@ -4,6 +4,8 @@ import Operations
 import constants as c
 from bashcmd import bash
 
+import os
+
 
 def main():
     Operations.newmaterial("Ti", 72)
@@ -14,4 +16,4 @@ def main():
 
 if __name__ == "__main__":
     main()
- #   bash("rm -r ./Files/Ti/")
+    bash("rm -r ./Files/Ti/")

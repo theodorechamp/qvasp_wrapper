@@ -17,7 +17,7 @@ if len(sys.argv) > 1:
     struct.make_supercell([sys.argv[2],sys.argv[2],sys.argv[2]])
 else:
     struct.make_supercell([3,3,3])
-struct.to("poscar",os.getcwd()+'/POSCAR')
+struct.to("poscar",os.path.dirname(os.path.realpath(__file__))+'/POSCAR')
 
 from pymatgen.core.surface import *
 #min_slab_size= 12

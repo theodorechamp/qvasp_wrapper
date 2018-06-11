@@ -20,6 +20,7 @@ class SSHClient:
     def command(self, cmd, echo=False):
         fullcmd = "cd " + self.cwd + "; " + cmd
         stdin, stdout, stderr = self.client.exec_command(fullcmd)
+        time.sleep(1)
         if echo:
             print(stdout.read())
         return stdout.read()
@@ -38,8 +39,13 @@ class SSHClient:
     def downloadFTP(self, server, local):
         self.sftp.get(server, local)
 
-    def uploadFTP(self, server, local):
+    def uploadFTP(self, server, local , echoserver=False, echoclient=False):
+        if echoserver:
+            print(server)
+        if echoclient:
+            print(local)
         self.sftp.put(local, server)
+
 
     def inqueue(self, mat):
         if (time.time() - self.lastcheckqueue) > 600:

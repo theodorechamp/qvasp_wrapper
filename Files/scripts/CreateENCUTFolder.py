@@ -14,7 +14,6 @@ to run the qvasp_kpts_mail command in each folder.
 
 '''
 
-
 import subprocess
 import time
 
@@ -24,15 +23,15 @@ INCREMENT = 5
 ENCUT = ENCUTLOWER
 
 while ENCUT <= ENCUTUPPER:
-	subprocess.Popen('mkdir ./'+str(ENCUT)+'/',shell=True)
-	time.sleep(1)
-	subprocess.Popen('cp -r ./INCAR ./'+str(ENCUT)+'/',shell=True)
-	subprocess.Popen('cp -r ./POTCAR ./'+str(ENCUT)+'/',shell=True)
-	subprocess.Popen('cp -r ./KPOINTS ./'+str(ENCUT)+'/',shell=True)
-	subprocess.Popen('cp -r ./POSCAR ./'+str(ENCUT)+'/',shell=True)
-	time.sleep(1)
-	out = open("./"+str(ENCUT)+"/INCAR","a")
-	out.write("ENCUT = "+ str(ENCUT))
-	out.close()
+    subprocess.Popen('mkdir ./' + str(ENCUT) + '/', shell=True)
+    time.sleep(1)
+    subprocess.Popen('cp -r ./INCAR ./' + str(ENCUT) + '/', shell=True)
+    subprocess.Popen('cp -r ./POTCAR ./' + str(ENCUT) + '/', shell=True)
+    subprocess.Popen('cp -r ./KPOINTS ./' + str(ENCUT) + '/', shell=True)
+    subprocess.Popen('cp -r ./POSCAR ./' + str(ENCUT) + '/', shell=True)
+    time.sleep(1)
+    out = open("./" + str(ENCUT) + "/INCAR", "a")
+    out.write("ENCUT = " + str(ENCUT))
+    out.close()
 
-	ENCUT = ENCUT + INCREMENT
+    ENCUT = ENCUT + INCREMENT
