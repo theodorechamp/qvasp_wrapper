@@ -59,10 +59,15 @@ def kptstudy(materialname, client):
     client.uploadFTP(c.SCRATCH + materialname + c.KPOINTFOLDER + 'CreateKPTSFolders.py',
                      os.getcwd() + c.FILESLOCATION + 'scripts/CreateKPTSFolders.py')
 
-    #Set up KPointStudy
+    # Set up KPointStudy
     print("Setting up KPoints...")
     client.command("python CreateKPTSFolders.py")
     time.sleep(2)
+
+    # Queuing jobs
+    client.uploadFTP(c.SCRATCH + materialname + c.KPOINTFOLDER + 'queuejobsKPTS.py',
+                     os.getcwd() + c.FILESLOCATION + 'scripts/queuejobsKPTS.py')
+    client.command("python queuejobsKPTS.py " + materialname, echo=True)
 
 
 def getionnumber(output):

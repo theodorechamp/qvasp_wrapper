@@ -2,7 +2,7 @@ import subprocess
 import time
 import sys
 
-if
+
 LowFolder = 400
 UpperFolder = 520
 Increment = 5
