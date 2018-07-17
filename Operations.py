@@ -17,14 +17,14 @@ CELLSIZE = 4
 def roundup(x):
     return int(math.ceil(x / 10.0)) * 10
 
-def newmaterial(materialname, materialID):
+def newmaterial(materialname):
     # Generate Poscar, expand it, place in correct folder
     bash('mkdir ' + os.getcwd() + c.FILESLOCATION + materialname)
     bash('cp ' + os.getcwd() + c.FILESLOCATION + 'scripts/GenerateSlab.py ' + os.getcwd() + c.FILESLOCATION + materialname)
-    bash('python ' + os.getcwd() + c.FILESLOCATION + materialname + '/GenerateSlab.py ' + str(materialID) + ' ' + str(CELLSIZE))
+    bash('python ' + os.getcwd() + c.FILESLOCATION + materialname + '/GenerateSlab.py ' + str(materialname) + ' ' + str(CELLSIZE))
     bash('cd Files/Ti; ls')
 
-def kptstudy(materialname, client):
+def kptstudysetup(materialname, client):
     # Making folders, uploading POSCAR file and POTCAR file
     client.cd(c.SCRATCH)
     client.command("mkdir " + materialname)
@@ -34,7 +34,7 @@ def kptstudy(materialname, client):
     client.cd('/' + materialname + '/'+ c.KPOINTFOLDER, relative=True)
     client.command('makepot ' + materialname)
 
-    #Finding reasonable ENCUT value
+    # Finding reasonable ENCUT value
     response = client.command('grep ENMAX POTCAR')
     ENMAX = float(re.findall(r'\d+', response)[0])
     ENCUT = ENMAX * 1.5
@@ -68,6 +68,43 @@ def kptstudy(materialname, client):
     client.uploadFTP(c.SCRATCH + materialname + c.KPOINTFOLDER + 'queuejobsKPTS.py',
                      os.getcwd() + c.FILESLOCATION + 'scripts/queuejobsKPTS.py')
     client.command("python queuejobsKPTS.py " + materialname, echo=True)
+
+
+def kptstudyanalysis(materialname, client):
+    # Upload geteneKPT.py file
+    client.cd(c.SCRATCH)
+    client.cd(materialname, relative=True)
+    client.cd(c.KPOINTFOLDER, relative=True)
+    client.uploadFTP(c.SCRATCH + materialname + c.KPOINTFOLDER + 'geteneKPT.py',
+                     os.getcwd() + c.FILESLOCATION + 'scripts/geteneKPT.py')
+    # Run geteneKPT.py
+    client.command("python geteneKPT.py")
+    time.sleep(10)
+
+    # Get contents of ENEResults.txt
+    results = client.command("cat " + c.ENERESULTSFILE).splitlines()
+    energy_wo_entropy = []
+    energy_w_entropy = []
+    for x in results:
+        values = re.findall(r'\d+.\d+', x)
+        energy_wo_entropy.append(values[0])
+        energy_w_entropy.append(values[1])
+    ionnumber = getionnumber(client.command("cat POSCAR"))
+    energy_wo_entropy_per_atom = []
+    for x in energy_wo_entropy:
+        energy_wo_entropy_per_atom.append(float(x) / float(ionnumber))
+    energy_w_entropy_per_atom = []
+    for x in energy_w_entropy:
+        energy_w_entropy_per_atom.append(float(x) / float(ionnumber))
+
+    # Choosing appropriate KPTS
+
+def encutstudysetup(materialname, client):
+    # Creating ENCUTStudy folder
+    client.cd(c.SCRATCH)
+    client.cd(materialname, relative=True)
+    client.command("mkdir " + c.ENCUTFOLDER)
+    # Copying
 
 
 def getionnumber(output):
