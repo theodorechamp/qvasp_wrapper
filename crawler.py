@@ -6,7 +6,7 @@ from StructureIdentify import Structure
 
 
 class DataContainer:
-	def __init__(self, time, ENMAX, ENCUT, KPTS, ions, number, hydrogen, lattype):
+	def __init__(self, time, ENMAX, ENCUT, KPTS, ions, number, hydrogen, lattype, requestedtime):
 		self.time = time
 		self.ENCUT = ENCUT
 		self.KPTS = KPTS
@@ -15,6 +15,7 @@ class DataContainer:
 		self.hydrogen = hydrogen
 		self.lattype = lattype
 		self.ENMAX = ENMAX
+		self.requestedtime = requestedtime
 
 	def print(self):
 		for x in self.ions:
@@ -55,7 +56,12 @@ class Crawler:
 
 				response = self.client.command("grep ENMAX POTCAR")
 				ENMAX = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", response)[0]
-
+				response = self.client.command("grep time *.log.sh")
+				if len(response) > 1:
+					RequestedTime = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", response)[0]
+				else:
+					RequestedTime = 0
+				print(RequestedTime)
 				response = self.client.command("cat POSCAR")
 				struct = Structure(response)
 				lattype = struct.identifystruct()
@@ -81,7 +87,7 @@ class Crawler:
 				else:
 					hdist = 0.0
 
-				data = DataContainer(time, ENMAX, ENCUT, KPTS, molecule.rstrip(), number, hdist, lattype)
+				data = DataContainer(time, ENMAX, ENCUT, KPTS, molecule.rstrip(), number, hdist, lattype, RequestedTime)
 				self.materials.append(data)
 
 		folders = self.client.command("echo */").split(" ")
@@ -92,9 +98,9 @@ class Crawler:
 
 	def write(self, fn):
 		f = open(os.getcwd() + c.OUTPUTLOCATION + fn, "w")
-		f.write("ions,number,hydrogen,lattice type,KPTS,ENCUT,ENMAX,time\n")
+		f.write("ions,number,hydrogen,lattice type,KPTS,ENCUT,ENMAX,time,requested time\n")
 		for x in self.materials:
-			f.write(x.ions + "," + str(x.number) + "," + str(x.hydrogen) + "," + str(x.lattype) + "," + str(x.KPTS[0]) + "," + str(x.ENCUT[0]) + "," + str(x.ENMAX) + ","+ str(x.time[0]) +"\n")
+			f.write(x.ions + "," + str(x.number) + "," + str(x.hydrogen) + "," + str(x.lattype) + "," + str(x.KPTS[0]) + "," + str(x.ENCUT[0]) + "," + str(x.ENMAX) + ","+ str(x.time[0])+ "," + str(x.requestedtime) +"\n")
 
 		f.close()
 		print("done!")
